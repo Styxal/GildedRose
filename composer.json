@@ -1,14 +1,6 @@
 {
-  "name": "apprentices/coffeeShop",
-  "description": "The coffee shop application you need to use",
-  "type": "library",
-  "keywords": [
-    "duck",
-    "quack",
-    "testing"
-  ],
-  "homepage": "http://coffee.com/",
-  "license": "MIT",
+  "name": "GildedRose",
+  "description": "Gilded Rose kata",
   "authors": [
     {
       "name": "Carmen Valente",
