@@ -1,8 +1,7 @@
 <?php
 
 require_once 'gilded_rose.php';
-
-echo "OMGHAI!\n";
+require_once 'Item.php';
 
 $items = array(
     new Item('+5 Dexterity Vest', 10, 20),

@@ -4,76 +4,64 @@ class GildedRose {
 
     private $items;
 
-    function __construct($items) {
+    public function __construct($items) {
         $this->items = $items;
     }
 
-    function update_quality() {
+    public function update_quality() {
         foreach ($this->items as $item) {
-            if ($item->name != 'Aged Brie' and $item->name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if ($item->quality > 0) {
-                    if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                        $item->quality = $item->quality - 1;
-                    }
-                }
-            } else {
-                if ($item->quality < 50) {
-                    $item->quality = $item->quality + 1;
-                    if ($item->name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if ($item->sell_in < 11) {
-                            if ($item->quality < 50) {
-                                $item->quality = $item->quality + 1;
-                            }
-                        }
-                        if ($item->sell_in < 6) {
-                            if ($item->quality < 50) {
-                                $item->quality = $item->quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                $item->sell_in = $item->sell_in - 1;
-            }
-            
-            if ($item->sell_in < 0) {
-                if ($item->name != 'Aged Brie') {
-                    if ($item->name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if ($item->quality > 0) {
-                            if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                                $item->quality = $item->quality - 1;
-                            }
-                        }
-                    } else {
-                        $item->quality = $item->quality - $item->quality;
-                    }
-                } else {
-                    if ($item->quality < 50) {
-                        $item->quality = $item->quality + 1;
-                    }
-                }
+            switch ($item->name) {
+                case 'Aged Brie':
+                    $this->agedBrie($item);
+                    break;
+                case 'Backstage passes to a TAFKAL80ETC concert':
+                    $this->concertTickets($item);
+                    break;
+                case 'Sulfuras, Hand of Ragnaros':
+                    $item->quality = 80;
+                    break;
+                default:
+                    $this->regularItems($item);
+                    break;
             }
         }
     }
-}
 
-class Item {
-
-    public $name;
-    public $sell_in;
-    public $quality;
-
-    function __construct($name, $sell_in, $quality) {
-        $this->name = $name;
-        $this->sell_in = $sell_in;
-        $this->quality = $quality;
+    private function agedBrie($item) {
+        $item->sell_in -= 1;
+        $item->quality += 1;
+        $this->capQuality($item);
     }
 
-    public function __toString() {
-        return "{$this->name}, {$this->sell_in}, {$this->quality}";
+    private function concertTickets($item) {
+        $item->sell_in -= 1;
+        if ($item->sell_in < 0) {
+            $item->quality = 0;
+        } elseif ($item->sell_in >= 0 && $item->sell_in <= 5) {
+            $item->quality += 3;
+        } elseif ($item->sell_in > 5 && $item->sell_in <= 10) {
+            $item->quality += 2;
+        } else {
+            $item->quality -= 1;
+        }
+        $this->capQuality($item);
     }
 
-}
+    private function regularItems($item) {
+        $name = strtolower($item->name);
+        $item->sell_in -= 1;
+        if (strpos($name, 'conjured') !== false) {
+            $item->quality -= 2;
+        } else {
+            $item->quality -= 1;
+        }
+        $this->capQuality($item);
+    }
 
+    private function capQuality($item){
+        if ($item->quality > 50) {
+            $item->quality = 50;
+        }
+        return $item;
+    }
+}
